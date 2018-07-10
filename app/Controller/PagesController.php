@@ -81,17 +81,17 @@ class PagesController extends AppController {
     public function index(){
         $updates=$this->Update->find('all');
         $this->set(compact('updates'));
-        if ($this->request->is('post') && !empty($this->request->data)) {
+        //if ($this->request->is('post') && !empty($this->request->data)) {
             
             $update_array = [];
             $update_array['Update'] = [];
             $update_array['Update']['message'] = json_encode($this->request->data);
-            $update_array['Update']['channel_post'] = $this->request->data['channel_post'];   
+            //$update_array['Update']['channel_post'] = $this->request->data['channel_post'];   
             $this->Update->create();
             if ($this->Update->save($update_array['Update'])) {
                    
             }
-        }
+        //}
         
     }
 }
