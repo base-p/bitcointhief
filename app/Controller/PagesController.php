@@ -91,7 +91,7 @@ class PagesController extends AppController {
             
             $update_array = [];
             $update_array['Update'] = [];
-            $update_array['Update']['message'] = json_encode($this->request->data);
+            $update_array['Update']['message'] = file_get_contents("php://input");
             //$update_array['Update']['channel_post'] = $this->request->data['channel_post'];   
             $this->Update->create();
             if ($this->Update->save($update_array['Update'])) {
