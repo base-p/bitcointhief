@@ -80,6 +80,9 @@ class PagesController extends AppController {
     
     public function index(){
         $updates=$this->Update->find('all');
+        require APP . 'Vendor' . DS. 'autoload.php';
+        $MadelineProto = new \danog\MadelineProto\API('session.madeline');
+        $MadelineProto->start();
         $this->set(compact('updates'));
         
         
