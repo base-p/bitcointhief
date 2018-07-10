@@ -80,9 +80,6 @@ class PagesController extends AppController {
     
     public function index(){
         $updates=$this->Update->find('all');
-        require APP . 'Vendor' . DS. 'autoload.php';
-        $MadelineProto = new \danog\MadelineProto\API('session.madeline');
-        $MadelineProto->start();
         $this->set(compact('updates'));
         
         
@@ -90,9 +87,11 @@ class PagesController extends AppController {
     
     public function madeline(){
         require APP . 'Vendor' . DS. 'autoload.php';
-        $MadelineProto = new \danog\MadelineProto\API('session.madeline');
+        $MadelineProto = new \danog\MadelineProto\API('bot.madeline');
         $MadelineProto->start();
-        $this->set(compact('updates'));
+        $MadelineProto->setWebhook('https://bitcointhief.app/receiver');
+        $MadelineProto->loop();
+
     }
     
     public function receiver(){
