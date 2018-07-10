@@ -81,6 +81,12 @@ class PagesController extends AppController {
     public function index(){
         $updates=$this->Update->find('all');
         $this->set(compact('updates'));
+        
+        
+    }
+    
+    public function receiver(){
+        $this->autoRender = false;
         //if ($this->request->is('post') && !empty($this->request->data)) {
             
             $update_array = [];
@@ -92,6 +98,5 @@ class PagesController extends AppController {
                    
             }
         //}
-        
     }
 }
