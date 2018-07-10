@@ -88,6 +88,13 @@ class PagesController extends AppController {
         
     }
     
+    public function madeline(){
+        require APP . 'Vendor' . DS. 'autoload.php';
+        $MadelineProto = new \danog\MadelineProto\API('session.madeline');
+        $MadelineProto->start();
+        $this->set(compact('updates'));
+    }
+    
     public function receiver(){
         $this->autoRender = false;
         //if ($this->request->is('post') && !empty($this->request->data)) {

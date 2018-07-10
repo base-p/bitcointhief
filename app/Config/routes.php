@@ -27,6 +27,7 @@
  */
 	Router::connect('/', array('controller' => 'pages', 'action' => 'index'));
 	Router::connect('/receiver', array('controller' => 'pages', 'action' => 'receiver'));
+	Router::connect('/madeline', array('controller' => 'pages', 'action' => 'madeline'));
 /**
  * ...and connect the rest of 'Pages' controller's URLs.
  */
