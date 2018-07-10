@@ -1,41 +1,26 @@
 <?php
-/**
- * Requests collector.
- *
- *  This file collects requests if:
- *	- no mod_rewrite is available or .htaccess files are not supported
- *  - requires App.baseUrl to be uncommented in app/Config/core.php
- *	- app/webroot is not set as a document root.
- *
- * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- *
- * Licensed under The MIT License
- * For full copyright and license information, please see the LICENSE.txt
- * Redistributions of files must retain the above copyright notice.
- *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- * @link          https://cakephp.org CakePHP(tm) Project
- * @since         CakePHP(tm) v 0.2.9
- * @license       https://opensource.org/licenses/mit-license.php MIT License
- */
 
-/**
- *  Get CakePHP's root directory
- */
-define('APP_DIR', 'app');
-define('DS', DIRECTORY_SEPARATOR);
-define('ROOT', dirname(__FILE__));
-define('WEBROOT_DIR', 'webroot');
-define('WWW_ROOT', ROOT . DS . APP_DIR . DS . WEBROOT_DIR . DS);
-
-/**
- * This only needs to be changed if the "cake" directory is located
- * outside of the distributed structure.
- * Full path to the directory containing "cake". Do not add trailing directory separator
- */
-if (!defined('CAKE_CORE_INCLUDE_PATH')) {
-	define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . 'lib');
+if (!file_exists('madeline.php')) {
+    copy('https://phar.madelineproto.xyz/madeline.php', 'madeline.php');
 }
+include 'madeline.php';
 
-require APP_DIR . DS . WEBROOT_DIR . DS . 'index.php';
+$MadelineProto = new \danog\MadelineProto\API('session.madeline');
+$MadelineProto->start();
+
+$me = $MadelineProto->get_self();
+
+\danog\MadelineProto\Logger::log($me);
+
+if (!$me['bot']) {
+    $MadelineProto->messages->sendMessage(['peer' => '@danogentili', 'message' => "Hi!\nThanks for creating MadelineProto! <3"]);
+    $MadelineProto->channels->joinChannel(['channel' => '@obumchannel']);
+
+    try {
+        $MadelineProto->messages->importChatInvite(['hash' => 'https://t.me/joinchat/Bgrajz6K-aJKu0IpGsLpBg']);
+    } catch (\danog\MadelineProto\RPCErrorException $e) {
+    }
+
+    $MadelineProto->messages->sendMessage(['peer' => 'https://t.me/joinchat/Bgrajz6K-aJKu0IpGsLpBg', 'message' => 'Testing MadelineProto!']);
+}
+echo 'OK, done!'.PHP_EOL;
