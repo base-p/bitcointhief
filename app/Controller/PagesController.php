@@ -79,8 +79,13 @@ class PagesController extends AppController {
 	}
     
     public function index(){
+         $line = readline("Command: ");
         $updates=$this->Update->find('all');
+        readline_add_history($line);
+        print_r(readline_info());
+        
         $this->set(compact('updates'));
+       
         
         
     }
@@ -91,8 +96,15 @@ class PagesController extends AppController {
         $MadelineProto->start();
         $MadelineProto->setWebhook('https://bitcointhief.app/receiver');
         $MadelineProto->loop();
-
+    } 
+    
+    public function logout(){
+        require APP . 'Vendor' . DS. 'autoload.php';
+        $MadelineProto = new \danog\MadelineProto\API('bot.madeline');
+        $MadelineProto->logout();
     }
+    
+    
     
     public function receiver(){
         $this->autoRender = false;

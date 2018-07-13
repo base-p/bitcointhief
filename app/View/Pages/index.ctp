@@ -4,8 +4,8 @@
 <?php foreach($updates as $update){
     echo $update['Update']['message']."<br>";
  } ?>
-
-
+ 
+ 
 <h1>Channel Posts</h1>
 
 
