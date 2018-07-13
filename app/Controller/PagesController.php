@@ -98,6 +98,7 @@ class PagesController extends AppController {
         $MadelineProto->loop();
     } 
     
+    
     public function logout(){
         $this->autoRender = false;
         require APP . 'Vendor' . DS. 'autoload.php';
