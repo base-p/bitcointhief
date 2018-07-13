@@ -99,6 +99,7 @@ class PagesController extends AppController {
     } 
     
     public function logout(){
+        $this->autoRender = false;
         require APP . 'Vendor' . DS. 'autoload.php';
         $MadelineProto = new \danog\MadelineProto\API('bot.madeline');
         $MadelineProto->logout();
