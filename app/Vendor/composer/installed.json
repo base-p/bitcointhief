@@ -6,12 +6,12 @@
         "source": {
             "type": "git",
             "url": "https://github.com/cakephp/cakephp.git",
-            "reference": "98c7fa1c97b26097c923cd3481a8a2114e23fe4f"
+            "reference": "ee02d4274f141695c434b6d1eb77e17b4b6c2ef8"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/cakephp/cakephp/zipball/98c7fa1c97b26097c923cd3481a8a2114e23fe4f",
-            "reference": "98c7fa1c97b26097c923cd3481a8a2114e23fe4f",
+            "url": "https://api.github.com/repos/cakephp/cakephp/zipball/ee02d4274f141695c434b6d1eb77e17b4b6c2ef8",
+            "reference": "ee02d4274f141695c434b6d1eb77e17b4b6c2ef8",
             "shasum": ""
         },
         "require": {
@@ -25,7 +25,7 @@
             "ext-mcrypt": "You need to install ext-openssl or ext-mcrypt to use AES-256 encryption",
             "ext-openssl": "You need to install ext-openssl or ext-mcrypt to use AES-256 encryption"
         },
-        "time": "2018-07-01T19:05:15+00:00",
+        "time": "2018-07-13T17:24:19+00:00",
         "bin": [
             "lib/Cake/Console/cake"
         ],
@@ -45,6 +45,265 @@
         "homepage": "https://cakephp.org",
         "keywords": [
             "framework"
+        ]
+    },
+    {
+        "name": "ccxt/ccxt",
+        "version": "1.16.40",
+        "version_normalized": "1.16.40.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/ccxt/ccxt.git",
+            "reference": "302012dc486ffef33de8766219d1a68532e32a8d"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/ccxt/ccxt/zipball/302012dc486ffef33de8766219d1a68532e32a8d",
+            "reference": "302012dc486ffef33de8766219d1a68532e32a8d",
+            "shasum": ""
+        },
+        "require": {
+            "ext-curl": "*",
+            "ext-iconv": "*",
+            "ext-pcre": "*",
+            "php": ">=5.3.0",
+            "symfony/polyfill-mbstring": "^1.7"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "~6"
+        },
+        "time": "2018-07-16T20:45:50+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "ccxt\\": "php/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Igor Kroitor",
+                "email": "igor.kroitor@gmail.com",
+                "homepage": "https://github.com/kroitor",
+                "role": "Developer"
+            },
+            {
+                "name": "Vitaly Gordon",
+                "email": "rocket.mind@gmail.com",
+                "homepage": "https://github.com/xpl",
+                "role": "Developer"
+            }
+        ],
+        "description": "A JavaScript / Python / PHP cryptocurrency trading library with support for more than 90 bitcoin/altcoin exchanges",
+        "homepage": "https://github.com/ccxt/ccxt",
+        "keywords": [
+            "1BTCXE",
+            "1Broker",
+            "ACX",
+            "ANX",
+            "ANXPro",
+            "BL3P",
+            "BTC Markets",
+            "BTC Trade UA",
+            "BTCC",
+            "BTCChina",
+            "BTCExchange",
+            "BTCTrader",
+            "BTCTurk",
+            "BTCX",
+            "BX.in.th",
+            "Bit2C",
+            "BitBay",
+            "BitBays",
+            "BitMEX",
+            "BitMarket",
+            "Bitcoin.co.id",
+            "Bleutrade",
+            "BlinkTrade",
+            "BtcBox",
+            "Bter.com",
+            "C-CEX",
+            "CEX.IO",
+            "CHBTC",
+            "CNY",
+            "ChileBit",
+            "CoinMate",
+            "CoinSpot",
+            "Coinsecure",
+            "Crypto Capital",
+            "Cryptopia",
+            "DOGE",
+            "EUR",
+            "EXMO",
+            "FYB-SE",
+            "FYB-SG",
+            "FoxBit",
+            "Gatecoin",
+            "Gemini",
+            "Huobi",
+            "HuobiPRO",
+            "LakeBTC",
+            "Liqui",
+            "LiveCoin",
+            "OKCoin",
+            "OKCoin.cn",
+            "OKCoin.com",
+            "OKEX",
+            "Paymium",
+            "Poloniex",
+            "QUOINE",
+            "Qryptos",
+            "QuadrigaCX",
+            "Southxchange",
+            "SurBitcoin",
+            "TheRockTrading",
+            "Tidex",
+            "USD",
+            "UrduBit",
+            "VBTC",
+            "Vaultoro",
+            "VirWoX",
+            "Wex",
+            "YoBit",
+            "Zaif",
+            "acx.io",
+            "algorithmic",
+            "algotrading",
+            "altcoin",
+            "altcoins",
+            "api",
+            "arbitrage",
+            "backtest",
+            "backtesting",
+            "binance",
+            "binance.com",
+            "bit2c.co.il",
+            "bitcoin",
+            "bitcoincoid",
+            "bitfinex",
+            "bitflyer",
+            "bitflyer.jp",
+            "bithumb",
+            "bithumb.com",
+            "bitlish",
+            "bitso",
+            "bitstamp",
+            "bittrex",
+            "bleutrade.com",
+            "bot",
+            "btc",
+            "btc-e",
+            "btc-trade.com.ua",
+            "btc-x",
+            "btcbox.co.jp",
+            "btce",
+            "btcexchange.ph",
+            "btcmarkets",
+            "btcmarkets.net",
+            "btctrader.com",
+            "btcturk.com",
+            "bter",
+            "ccex",
+            "cex",
+            "chilebit.net",
+            "coin",
+            "coincheck",
+            "coingi",
+            "coingi.com",
+            "coinmarketcap",
+            "coins",
+            "coinspot.com.au",
+            "crypto",
+            "crypto currency",
+            "crypto market",
+            "cryptocapital.co",
+            "cryptocurrency",
+            "cryptopia.co.nz",
+            "currencies",
+            "currency",
+            "darkcoin",
+            "dash",
+            "digital currency",
+            "dogecoin",
+            "dsx",
+            "dsx.uk",
+            "e-commerce",
+            "etc",
+            "eth",
+            "ether",
+            "ethereum",
+            "exchange",
+            "exchanges",
+            "flowBTC",
+            "flowbtc.com",
+            "foxbit.exchange",
+            "framework",
+            "gdax",
+            "hitbtc",
+            "huobi.pro",
+            "independent reserve",
+            "independentreserve.com",
+            "invest",
+            "investing",
+            "investor",
+            "itBit",
+            "jubi.com",
+            "kraken",
+            "lakebtc.com",
+            "library",
+            "light",
+            "liqui.io",
+            "litecoin",
+            "ltc",
+            "luno",
+            "market",
+            "market data",
+            "markets",
+            "mercado",
+            "mercadobitcoin",
+            "mercadobitcoin.br",
+            "merchandise",
+            "merchant",
+            "minimal",
+            "mixcoins",
+            "mixcoins.com",
+            "nova",
+            "novaexchange",
+            "novaexchange.com",
+            "okex.com",
+            "order",
+            "order book",
+            "orderbook",
+            "price",
+            "price data",
+            "pricefeed",
+            "private",
+            "public",
+            "ripple",
+            "strategy",
+            "surbitcoin.com",
+            "tidex.com",
+            "toolkit",
+            "trade",
+            "trader",
+            "trading",
+            "urdubit.com",
+            "vbtc.exchange",
+            "vbtc.vn",
+            "volume",
+            "wex.nz",
+            "xBTCe",
+            "xbt",
+            "xbtce.com",
+            "xrp",
+            "yobit.net",
+            "yunbi",
+            "zec",
+            "zerocoin"
         ]
     },
     {
@@ -1050,6 +1309,62 @@
         ]
     },
     {
+        "name": "swiftmailer/swiftmailer",
+        "version": "5.x-dev",
+        "version_normalized": "5.9999999.9999999.9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/swiftmailer/swiftmailer.git",
+            "reference": "7ffc1ea296ed14bf8260b6ef11b80208dbadba91"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/7ffc1ea296ed14bf8260b6ef11b80208dbadba91",
+            "reference": "7ffc1ea296ed14bf8260b6ef11b80208dbadba91",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.3"
+        },
+        "require-dev": {
+            "mockery/mockery": "~0.9.1",
+            "symfony/phpunit-bridge": "~3.2"
+        },
+        "time": "2018-01-23T07:37:21+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "5.4-dev"
+            }
+        },
+        "installation-source": "source",
+        "autoload": {
+            "files": [
+                "lib/swift_required.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Chris Corbyn"
+            },
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            }
+        ],
+        "description": "Swiftmailer, free feature-rich PHP mailer",
+        "homepage": "https://swiftmailer.symfony.com",
+        "keywords": [
+            "email",
+            "mail",
+            "mailer"
+        ]
+    },
+    {
         "name": "symfony/polyfill-ctype",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
@@ -1107,6 +1422,67 @@
             "ctype",
             "polyfill",
             "portable"
+        ]
+    },
+    {
+        "name": "symfony/polyfill-mbstring",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/polyfill-mbstring.git",
+            "reference": "25b83a5050c6607e2dfa814ffb15388caf7ce690"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/25b83a5050c6607e2dfa814ffb15388caf7ce690",
+            "reference": "25b83a5050c6607e2dfa814ffb15388caf7ce690",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.3"
+        },
+        "suggest": {
+            "ext-mbstring": "For best performance"
+        },
+        "time": "2018-05-30T15:56:36+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.8-dev"
+            }
+        },
+        "installation-source": "source",
+        "autoload": {
+            "psr-4": {
+                "Symfony\\Polyfill\\Mbstring\\": ""
+            },
+            "files": [
+                "bootstrap.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Nicolas Grekas",
+                "email": "p@tchwork.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
+            }
+        ],
+        "description": "Symfony polyfill for the Mbstring extension",
+        "homepage": "https://symfony.com",
+        "keywords": [
+            "compatibility",
+            "mbstring",
+            "polyfill",
+            "portable",
+            "shim"
         ]
     },
     {

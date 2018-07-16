@@ -31,4 +31,41 @@ App::uses('Controller', 'Controller');
  * @link		https://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
+     public $components = array(
+         //'DebugKit.Toolbar',
+         'Cookie','Session',
+         'Flash',
+        'Auth' => array(
+            'loginRedirect' => array(
+                'controller' => 'telegrams',
+                'action' => 'dashboard'
+            ),
+            'logoutRedirect' => array(
+                'controller' => 'telegrams',
+                'action' => 'login'
+            ),
+            'loginAction' => array(
+                'controller' => 'telegrams',
+                'action' => 'login',
+            ),
+            'authenticate' => array(
+                'Form' => array(
+                    'passwordHasher' => 'Blowfish',
+                    'fields'=>['username'=>'username',
+                    'password'=>'password']
+                )
+            ),
+        )
+    );
+  
+    
+    public function beforeFilter() {
+        parent::beforeFilter();  
+       $this->Cookie->name = 'userdet';
+       $this->Cookie->time = 3600; // or '1 hour'
+        $this->Cookie->key = Configure::read('Security.cookieKey');
+//       $this->Cookie->httpOnly = true;
+       $this->Cookie->type('aes');
+        $this->Auth->allow('index','resetpassword','logout','register','login','admin_index','regadmin','confirm_email','checkEmail','recaptcha','sendMail','get_rates','faq','confirm2fa','updatetotalspins','new_password','save_options','test_crypto','resend_email_verification');
+    }
 }

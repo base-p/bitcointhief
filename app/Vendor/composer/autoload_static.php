@@ -9,7 +9,9 @@ class ComposerStaticInit911f8ce136c8443b49ecb2d24ff027d8
     public static $files = array (
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '5255c38a0faeba867671b61dfda6d864' => __DIR__ . '/..' . '/paragonie/random_compat/lib/random.php',
+        '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
         'decc78cc4436b1292c6c0d151b19445c' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
+        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         'efa3b80c61fb35e374f529ec349af098' => __DIR__ . '/..' . '/danog/madelineproto/src/BigIntegor.php',
         '7c6952916da927c1fa7fc73e564a99dc' => __DIR__ . '/..' . '/danog/madelineproto/src/Socket.php',
         '9f641fdaff2d9330ca6de95bb6458e68' => __DIR__ . '/..' . '/danog/madelineproto/src/Collectable.php',
@@ -27,8 +29,13 @@ class ComposerStaticInit911f8ce136c8443b49ecb2d24ff027d8
         array (
             'phpseclib\\' => 10,
         ),
+        'c' => 
+        array (
+            'ccxt\\' => 5,
+        ),
         'S' => 
         array (
+            'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Ctype\\' => 23,
             'Symfony\\Component\\Yaml\\' => 23,
         ),
@@ -55,6 +62,14 @@ class ComposerStaticInit911f8ce136c8443b49ecb2d24ff027d8
         'phpseclib\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib',
+        ),
+        'ccxt\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/ccxt/ccxt/php',
+        ),
+        'Symfony\\Polyfill\\Mbstring\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
         'Symfony\\Polyfill\\Ctype\\' => 
         array (

@@ -28,6 +28,7 @@
 	Router::connect('/', array('controller' => 'telegrams', 'action' => 'index'));
 	Router::connect('/receiver', array('controller' => 'telegrams', 'action' => 'receiver'));
 	Router::connect('/madeline', array('controller' => 'telegrams', 'action' => 'madeline'));
+	Router::connect('/register', array('controller' => 'telegrams', 'action' => 'register'));
 /**
  * ...and connect the rest of 'Pages' controller's URLs.
  */
