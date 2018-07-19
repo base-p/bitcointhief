@@ -29,6 +29,10 @@
 	Router::connect('/receiver', array('controller' => 'telegrams', 'action' => 'receiver'));
 	Router::connect('/madeline', array('controller' => 'telegrams', 'action' => 'madeline'));
 	Router::connect('/register', array('controller' => 'telegrams', 'action' => 'register'));
+	Router::connect('/login', array('controller' => 'telegrams', 'action' => 'login'));
+	Router::connect('/account', array('controller' => 'telegrams', 'action' => 'account'));
+	Router::connect('/dashboard', array('controller' => 'telegrams', 'action' => 'dashboard'));
+	Router::connect('/resetpassword', array('controller' => 'telegrams', 'action' => 'resetpassword'));
 /**
  * ...and connect the rest of 'Pages' controller's URLs.
  */

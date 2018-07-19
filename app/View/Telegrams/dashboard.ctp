@@ -1,0 +1,1 @@
+<a href="<?= SITEPATH.'account';?>">My Account</a>

@@ -35,7 +35,7 @@ class TelegramsController extends AppController {
  *
  * @var array
  */
-	public $uses = array('Update','Option','User');
+	public $uses = array('Update','Option','User','Exchange');
 
 /**
  * Displays a view
@@ -50,7 +50,7 @@ class TelegramsController extends AppController {
     public function index(){
          $line = readline("Command: ");
         $updates=$this->Update->find('all');
-        readline_add_history($line);
+       // readline_add_history($line);
         print_r(readline_info());
         
         $this->set(compact('updates'));
@@ -91,7 +91,7 @@ class TelegramsController extends AppController {
                     $basePath = SITEPATH;
                     $message = <<<HTML
 <p>Hi {$email}.</p>
-<p>Click <a href='{$basePath}spins/confirm_email/{$ref_id}'>here</a> to verify your E-mail or copy and paste the URL below into your browser to confirm your E-mail</p>
+<p>Click <a href='{$basePath}telegrams/confirm_email/{$ref_id}'>here</a> to verify your E-mail or copy and paste the URL below into your browser to confirm your E-mail</p>
 <p>{$basePath}spins/confirm_email/{$ref_id}</p>
 HTML;
 
@@ -108,6 +108,65 @@ HTML;
             } 
         }
         
+	}
+    
+    function confirm_email($ref_id=NULL) {
+        $this->autoRender = false;
+          if(isset($ref_id)){
+              $userDetails=$this->User->find('first',array('conditions'=>array('User.ref_id'=>$ref_id)));
+              if(!empty($userDetails)){
+                  if($userDetails['User']['email_confirmed']==1){
+                      $this->Session->setFlash('Your e-mail address has been confirmed, proceed to login.','myflash',['params'=>['class' => 'flasherror message']]);
+                      
+                    return $this->redirect(array('controller'=>'telegrams','action' => 'login'));
+                  }
+                  $this->User->updateAll(
+                        array('User.email_confirmed' => 1),
+                        array('User.id' => $userDetails['User']['id'])
+                    );
+                  $this->Session->setFlash("Your e-mail address has been confirmed, proceed to login.",'myflash',['params'=>['class' => 'flashsuccess message']]);
+                  
+                    return $this->redirect(array('controller'=>'telegrams','action' => 'login'));
+              }else{
+                  $this->Session->setFlash('Invalid confirmation link. It may have been expired. Please try again.','myflash',['params'=>['class' => 'flasherror message']]);
+                  
+                return $this->redirect(array('controller'=>'telegrams','action' => 'login'));
+              }
+                
+          }else{
+              $this->Session->setFlash('Invalid confirmation link. It may have been expired. Please try again.','myflash',['params'=>['class' => 'flasherror message']]);
+                return $this->redirect(array('controller'=>'telegrams','action' => 'login'));
+          }
+        
+    }
+    
+    public function login() {
+        
+       
+        if(!empty($this->Auth->User('id'))){
+            return $this->redirect(['controller'=>'telegrams','action'=>'dashboard']);
+        }
+        if ($this->request->is('post') && !empty($this->request->data)) {
+            if(!empty($_POST['g-recaptcha-response'])){
+                $captcha = $this->recaptcha($_POST['g-recaptcha-response'], $_SERVER['REMOTE_ADDR']);
+            }else{$captcha=true;}
+            if($captcha){
+                if ($this->Auth->login()){
+                    if($this->Auth->User('email_confirmed')==0){
+                        $email = $this->Auth->User('username');
+                        $this->Auth->logout();
+                        $this->Session->setFlash('You have not confirmed your e-mail address. Check your e-mail for further instructions.','myflash',['params'=>['class' => 'flasherror message','resend'=>1,'email'=>$email]]);
+                        return $this->redirect(['controller'=>'telegrams','action'=>'login']);
+                    }
+                    return $this->redirect(['controller'=>'telegrams','action'=>'dashboard']);
+                }else{
+                     $this->Session->setFlash('Invalid username or password, try again.','myflash',['params'=>['class' => 'flasherror message']]);
+                    return $this->redirect(['controller'=>'telegrams','action'=>'login']);
+            
+                }
+            }
+                        
+        }
 	}
     
     public function resend_email_verification($email=NULL){
@@ -232,8 +291,10 @@ HTML;
         $MadelineProto->logout();
     }
     
-    public function fetch_order_book($exchange_name = NULL, $signal_symbol = NULL, $base_symbol = NULL){
-         require APP . 'Vendor' . DS. 'ccxt'. DS. 'ccxt'. DS. 'ccxt.php';
+    
+    
+    private function fetch_order_book($exchange_name = NULL, $signal_symbol = NULL, $exchange = NULL ,$base_symbol = "BTC"){
+        // require APP . 'Vendor' . DS. 'ccxt'. DS. 'ccxt'. DS. 'ccxt.php';
         //https://www.cryptopia.co.nz/api/GetMarketOrders
         //$cryptopia_url = "https://www.cryptopia.co.nz/api/GetMarketOrders/".$signal_symbol."_".$base_symbol;
 		//$response = file_get_contents($cryptopia_url);
@@ -243,10 +304,11 @@ HTML;
         //$this->set(compact('response','buy_array','sell_array'));
        // $buy_array);
         //$this->debug_print_2($sell_array);
-        $exchange = '\\ccxt\\' . $exchange_name;
-        $exchange = new $exchange ();
-        $limit = 100;
-        $this->debug_print_2($exchange->fetch_l2_order_book ($signal_symbol.'/'.$base_symbol, $limit));
+        //$exchange = '\\ccxt\\' . $exchange_name;
+        //$exchange = new $exchange ();
+        $limit = 200;
+        $result = $exchange->fetch_l2_order_book ($signal_symbol.'/'.$base_symbol, $limit);
+        return $result;
     }
     
     private function debug_print_2($var1 =NULL){
@@ -255,9 +317,102 @@ HTML;
         echo "</pre>";
     }
     
+    public function dashboard(){
+        $user_id = $this->Auth->User('id');
+        if ($this->request->is('post') && !empty($this->request->data)) {}
+    }
+    
+     public function account(){
+         $user_id = $this->Auth->User('id');
+         $exchanges = $this->Exchange->find('all');
+         $options = $this->Option->find('all',array('conditions'=>array('Option.user_id'=>$user_id)));
+        if ($this->request->is('post') && !empty($this->request->data)) {
+            if(empty($this->request->data['Option']['exchange_id'])){
+                $this->Session->setFlash('You must Select an exchange','myflash',['params'=>['class' => 'flasherror message']]);
+                return $this->redirect(array('controller'=>'telegrams','action' => 'account'));
+            }
+            $this->request->data['Option']['user_id']=$user_id;
+            $this->Option->create();
+            if($this->Option->save($this->request->data['Option'])){
+                $this->Session->setFlash('API details saved!','myflash',['params'=>['class' => 'flashsuccess message']]);
+                return $this->redirect(array('controller'=>'telegrams','action' => 'account'));
+            }
+            $this->Session->setFlash('Something went wrong!','myflash',['params'=>['class' => 'flasherror message']]);
+                return $this->redirect(array('controller'=>'telegrams','action' => 'account'));
+        }
+         $this->set(compact('exchanges','options'));
+    }
+    
+    
+    public function pump_order($exchange_name = NULL, $signal_symbol = NULL, $order_type = NULL, $user_id = NULL, $base_symbol = "BTC"){
+        date_default_timezone_set ('UTC');
+         require APP . 'Vendor' . DS. 'ccxt'. DS. 'ccxt'. DS. 'ccxt.php';
+        $exchange = '\\ccxt\\' . $exchange_name;
+        $exchange = new $exchange ();
+        $order_book = $this->fetch_order_book($exchange_name,$signal_symbol,$exchange,$base_symbol);
+        $count_bids = count ($order_book['bids']);
+        $count_asks = count ($order_book['asks']);
+        $count_bids = $count_bids - 1;
+        $count_asks = $count_asks - 1;
+        
+        //fetch api key from db
+        //$api_key=;
+        //$api_secret=;;
+        
+        //assign api key
+        $exchange->apiKey = $api_key;
+        $exchange->secret = $api_secret;
+        
+        
+        
+        var_dump($count_asks,$count_bids,$exchange->has);
+        
+        if($order_type == "buy"){
+            $order_price = $order_book['asks'][$count_asks][0];
+            //place order
+            //save order id and pair in active database
+        }elseif($order_type == "sell"){
+            $order_price = $order_book['bids'][$count_bids][0];
+            //check if buy order was successful for the buy order using user id and trade pair
+            //execute sell order
+            //
+        }
+        
+    }
+    
+     private function fetch_balance($exchange_name = NULL, $user_id = NULL, $base_symbol = "BTC"){
+        date_default_timezone_set ('UTC');
+        require APP . 'Vendor' . DS. 'ccxt'. DS. 'ccxt'. DS. 'ccxt.php';
+        $exchange = '\\ccxt\\' . $exchange_name;
+        $exchange = new $exchange ();
+        
+        //fetch api key from db
+        //$api_key=;
+        //$api_secret=;;
+        
+        //assign api key
+        $exchange->apiKey = $api_key;
+        $exchange->secret = $api_secret;
+         
+        $balance_data = $exchange->fetch_balance ();
+        
+        var_dump($balance_data);
+       
+        
+    }
+    
+    
+    public function compare_balance(){
+        require APP . 'Vendor' . DS. 'ccxt'. DS. 'ccxt'. DS. 'ccxt.php';
+        var_dump (\ccxt\Exchange::$exchanges); 
+        
+        
+    }
+    
     public function text_ccxt(){
         require APP . 'Vendor' . DS. 'ccxt'. DS. 'ccxt'. DS. 'ccxt.php';
         var_dump (\ccxt\Exchange::$exchanges); 
+        
         
     }
     
@@ -298,4 +453,49 @@ HTML;
             //}
         //}
     }
+    
+    public function resetpassword () {
+
+        
+        if ($this->request->is('post') && !empty($this->request->data)) {
+            if(!empty($_POST['g-recaptcha-response'])){
+            $captcha = $this->recaptcha($_POST['g-recaptcha-response'], $_SERVER['REMOTE_ADDR']);
+            }else{$captcha=true;}
+            if($captcha){
+            $email=$this->request->data['email'];
+            $userDetails = $this->User->find('first',array('conditions'=>array('User.username'=>$email)));
+            if(!empty($userDetails)){
+                $user_id = $userDetails['User']['id'];
+                require_once(APP . 'Vendor' . DS. 'genpwd'. DS. 'genpwd.php');
+                $resetkey= genpwd(30);
+                $db = $this->User->getDataSource();
+                    $resetkey1 = $db->value($resetkey, 'string');
+                     $this->User->updateAll(
+                        array('User.reset_password' => $resetkey1),
+                        array('User.id' => $user_id)
+                    );
+                $subject = "Reset Password";
+                $basePath = SITEPATH;
+                $message = <<<HTML
+<p>Hi,</p>
+<p>Click <a href='{$basePath}telegrams/new_password/{$user_id}/{$resetkey}'>here</a> to reset your password.</p>
+<p>Or copy and paste the URL below into your browser window.</p>
+<p>{$basePath}telegrams/new_password/{$user_id}/{$resetkey}</p>
+HTML;
+
+                $this->sendMail($email, $subject, $message);
+                $this->Session->setFlash("We've sent an e-mail with instructions on how to reset your password. Be sure to check spam/junk folder if our e-mail is not  in inbox!",'myflash',['params'=>['class' => 'flashsuccess message']]);
+                return $this->redirect(['controller'=>'telegrams','action'=>'resetpassword']);
+                
+            }else{
+                
+                $this->Session->setFlash('Oops! The e-mail address you supplied is not registered.','myflash',['params'=>['class' => 'flasherror message']]);
+            }
+        }else{
+                $this->Session->setFlash('Oops! We could not verify that you are human.','myflash',['params'=>['class' => 'flasherror message']]);
+                return $this->redirect(['controller'=>'telegrams','action'=>'resetpassword']);
+            } }
+        
+        //$this->set(compact('days','result'));
+	}
 }

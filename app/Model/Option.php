@@ -4,18 +4,18 @@ App::uses('AppModel', 'Model');
 class Option extends AppModel {
      var $name = 'Option';
     
-    /*public $hasMany = array(
-         'Transaction' => array(
-            'className' => 'Transaction',
-            'foreignKey' => 'user_id',
+   /* public $hasMany = array(
+         'Exchange' => array(
+            'className' => 'Exchange',
+            'foreignKey' => 'exchange_id',
             ),
     );*/
-//    public $belongsTo = array(
-//         'Spinner_type' => array(
-//            'className' => 'Spinner_type',
-//            'foreignKey' => 'spinner_type_id',
-//            ),
-//    );
+    public $belongsTo = array(
+         'Exchange' => array(
+            'className' => 'Exchange',
+            'foreignKey' => 'exchange_id',
+            ),
+    );
 //    public $validate = array(
 //        'username' => array(
 //            'rule' => 'email',
