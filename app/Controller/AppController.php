@@ -60,12 +60,12 @@ class AppController extends Controller {
   
     
     public function beforeFilter() {
-        parent::beforeFilter();  
+       // parent::beforeFilter();  
        $this->Cookie->name = 'userdet';
        $this->Cookie->time = 3600; // or '1 hour'
         $this->Cookie->key = Configure::read('Security.cookieKey');
 //       $this->Cookie->httpOnly = true;
        $this->Cookie->type('aes');
-        $this->Auth->allow('index','resetpassword','logout','register','login','admin_index','regadmin','confirm_email','checkEmail','recaptcha','sendMail','get_rates','faq','confirm2fa','updatetotalspins','new_password','save_options','test_crypto','resend_email_verification');
+        $this->Auth->allow('index','resetpassword','logout','register','login','admin_index','regadmin','confirm_email','checkEmail','recaptcha','sendMail','get_rates','faq','confirm2fa','updatetotalspins','new_password','save_options','order_checker','resend_email_verification');
     }
 }
