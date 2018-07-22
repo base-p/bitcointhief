@@ -681,7 +681,10 @@ HTML;
                  return $btc_balance;
                 } catch (Exception $e) {
                     $this->Option->delete($option['Option']['id']);
+                 
                     $this->Session->setFlash($e->getMessage (),'myflash',['params'=>['class' => 'flasherror message']]);
+                 return $this->redirect(array('controller'=>'telegrams','action' => 'account'));
+                    
                 }
            
              
