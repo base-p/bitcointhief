@@ -80,7 +80,7 @@
                         <td><?= $active_pump['Pump']['created']; ?></td>
                         <td><?= $active_pump['Pump']['active']; ?></td>
                         
-                        <td><a href="<?= SITEPATH.'/telegrams/editoption/'.$active_pump['Pump']['id'] ; ?>">Edit</a></td>
+                        <td><a href="<?= SITEPATH.'telegrams/panic/'.$active_pump['Pump']['id'] ; ?>">Panic</a></td>
                     </tr>
                    <?php } ?> 
                 </tbody>
