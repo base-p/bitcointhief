@@ -101,13 +101,7 @@ class okex (okcoinusd):
             result[symbol] = ticker
         return result
 
-<<<<<<< HEAD
     async def fetch_tickers(self, symbols=None, params={}):
         method = self.options['fetchTickersMethod']
         response = await getattr(self, method)(symbols, params)
-=======
-    async def fetch_tickers(self, symbol=None, params={}):
-        method = self.options['fetchTickersMethod']
-        response = await getattr(self, method)(symbol, params)
->>>>>>> e22a1c2fad969af46b596af93a5b8a278c6b10b1
         return response

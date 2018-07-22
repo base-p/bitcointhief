@@ -30,11 +30,7 @@ SOFTWARE.
 
 namespace ccxt;
 
-<<<<<<< HEAD
-$version = '1.16.84';
-=======
-$version = '1.16.71';
->>>>>>> e22a1c2fad969af46b596af93a5b8a278c6b10b1
+$version = '1.16.86';
 
 // rounding mode
 const TRUNCATE = 0;
@@ -50,11 +46,7 @@ const PAD_WITH_ZERO = 1;
 
 class Exchange {
 
-<<<<<<< HEAD
-    const VERSION = '1.16.84';
-=======
-    const VERSION = '1.16.71';
->>>>>>> e22a1c2fad969af46b596af93a5b8a278c6b10b1
+    const VERSION = '1.16.86';
 
     public static $exchanges = array (
         '_1broker',

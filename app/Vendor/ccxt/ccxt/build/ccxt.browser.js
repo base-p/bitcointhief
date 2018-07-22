@@ -45,11 +45,7 @@ const Exchange  = require ('./js/base/Exchange')
 //-----------------------------------------------------------------------------
 // this is updated by vss.js when building
 
-<<<<<<< HEAD
-const version = '1.16.84'
-=======
-const version = '1.16.71'
->>>>>>> e22a1c2fad969af46b596af93a5b8a278c6b10b1
+const version = '1.16.86'
 
 Exchange.ccxtVersion = version
 
@@ -18755,8 +18751,8 @@ module.exports = class cobinhood extends Exchange {
                 'fetchClosedOrders': true,
                 'fetchOrderTrades': true,
                 'fetchOrder': true,
-                'fetchDepositAddress': false,
-                'createDepositAddress': false,
+                'fetchDepositAddress': true,
+                'createDepositAddress': true,
                 'withdraw': false,
                 'fetchMyTrades': true,
             },
@@ -18836,9 +18832,20 @@ module.exports = class cobinhood extends Exchange {
                         'wallet/generic_deposits/{generic_deposit_id}',
                         'wallet/generic_withdrawals',
                         'wallet/generic_withdrawals/{generic_withdrawal_id}',
+                        // older endpoints
+                        'wallet/deposit_addresses',
+                        'wallet/withdrawal_addresses',
+                        'wallet/withdrawals/{withdrawal_id}',
+                        'wallet/withdrawals',
+                        'wallet/deposits/{deposit_id}',
+                        'wallet/deposits',
                     ],
                     'post': [
                         'trading/orders',
+                        // older endpoints
+                        'wallet/deposit_addresses',
+                        'wallet/withdrawal_addresses',
+                        'wallet/withdrawals',
                     ],
                     'delete': [
                         'trading/orders/{order_id}',
@@ -19253,6 +19260,40 @@ module.exports = class cobinhood extends Exchange {
         }
         let response = await this.privateGetTradingTrades (this.extend (request, params));
         return this.parseTrades (response['result']['trades'], market, since, limit);
+    }
+
+    async createDepositAddress (code, params = {}) {
+        await this.loadMarkets ();
+        let currency = this.currency (code);
+        let response = await this.privatePostWalletDepositAddresses ({
+            'currency': currency['id'],
+        });
+        let address = this.safeString (response['result']['deposit_address'], 'address');
+        this.checkAddress (address);
+        return {
+            'currency': code,
+            'address': address,
+            'info': response,
+        };
+    }
+
+    async fetchDepositAddress (code, params = {}) {
+        await this.loadMarkets ();
+        let currency = this.currency (code);
+        let response = await this.privateGetWalletDepositAddresses (this.extend ({
+            'currency': currency['id'],
+        }, params));
+        let addresses = this.safeValue (response['result'], 'deposit_addresses', []);
+        let address = undefined;
+        if (addresses.length > 0) {
+            address = this.safeString (addresses[0], 'address');
+        }
+        this.checkAddress (address);
+        return {
+            'currency': code,
+            'address': address,
+            'info': response,
+        };
     }
 
     sign (path, api = 'public', method = 'GET', params = {}, headers = undefined, body = undefined) {
@@ -20550,7 +20591,7 @@ module.exports = class coinex extends Exchange {
                 },
                 'private': {
                     'get': [
-                        'balance',
+                        'balance/info',
                         'order',
                         'order/pending',
                         'order/finished',
@@ -20799,7 +20840,27 @@ module.exports = class coinex extends Exchange {
 
     async fetchBalance (params = {}) {
         await this.loadMarkets ();
-        let response = await this.privateGetBalance (params);
+        let response = await this.privateGetBalanceInfo (params);
+        //
+        //     {
+        //       "code": 0,
+        //       "data": {
+        //         "BCH": {                     # BCH account
+        //           "available": "13.60109",   # Available BCH
+        //           "frozen": "0.00000"        # Frozen BCH
+        //         },
+        //         "BTC": {                     # BTC account
+        //           "available": "32590.16",   # Available BTC
+        //           "frozen": "7000.00"        # Frozen BTC
+        //         },
+        //         "ETH": {                     # ETH account
+        //           "available": "5.06000",    # Available ETH
+        //           "frozen": "0.00000"        # Frozen ETH
+        //         }
+        //       },
+        //       "message": "Ok"
+        //     }
+        //
         let result = { 'info': response };
         let balances = response['data'];
         let currencies = Object.keys (balances);
@@ -44380,15 +44441,9 @@ module.exports = class okex extends okcoinusd {
         return result;
     }
 
-<<<<<<< HEAD
     async fetchTickers (symbols = undefined, params = {}) {
         let method = this.options['fetchTickersMethod'];
         let response = await this[method] (symbols, params);
-=======
-    async fetchTickers (symbol = undefined, params = {}) {
-        let method = this.options['fetchTickersMethod'];
-        let response = await this[method] (symbol, params);
->>>>>>> e22a1c2fad969af46b596af93a5b8a278c6b10b1
         return response;
     }
 };
