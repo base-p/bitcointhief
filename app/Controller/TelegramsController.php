@@ -99,13 +99,13 @@ class TelegramsController extends AppController {
                     $message = <<<HTML
 <p>Hi {$email}.</p>
 <p>Click <a href='{$basePath}telegrams/confirm_email/{$ref_id}'>here</a> to verify your E-mail or copy and paste the URL below into your browser to confirm your E-mail</p>
-<p>{$basePath}spins/confirm_email/{$ref_id}</p>
+<p>{$basePath}telegrams/confirm_email/{$ref_id}</p>
 HTML;
 
                     $subject='Email verification';
                     $this->sendMail($email,$subject,$message);
                     $this->Session->setFlash('Registration was successful. You need to confirm your e-mail to proceed. Please check your e-mail for further instructions. Be sure to check spam/junk folder if our e-mail is not  in inbox!','myflash',['params'=>['class' => 'flashsuccess message']]);
-                    return $this->redirect(array('controller'=>'spins','action' => 'register'));
+                    return $this->redirect(array('controller'=>'telegrams','action' => 'register'));
                 }
                     $this->Session->setFlash('The user could not be saved. Please, try again. If the problem persists, please contact an FRG team member.','myflash',['params'=>['class' => 'flasherror message']]);
         
@@ -187,20 +187,20 @@ HTML;
         $basePath = SITEPATH;
         $message = <<<HTML
 <p>Hi {$email}.</p>
-<p>Click <a href='{$basePath}spins/confirm_email/{$ref_id}'>here</a> to verify your E-mail or copy and paste the URL below into your browser to confirm your E-mail</p>
-<p>{$basePath}spins/confirm_email/{$ref_id}</p>
+<p>Click <a href='{$basePath}telegrams/confirm_email/{$ref_id}'>here</a> to verify your E-mail or copy and paste the URL below into your browser to confirm your E-mail</p>
+<p>{$basePath}telegrams/confirm_email/{$ref_id}</p>
 HTML;
         $subject='Email verification';
         $this->sendMail($email,$subject,$message);
         $this->Session->setFlash('E-mail Resent. Please check your e-mail for further instructions. Be sure to check spam/junk folder if our e-mail is not  in inbox!','myflash',['params'=>['class' => 'flashsuccess message']]);
-        return $this->redirect(array('controller'=>'spins','action' => 'login'));
+        return $this->redirect(array('controller'=>'telegrams','action' => 'login'));
         }else{
             $this->Session->setFlash('E-mail does not exist in our database!','myflash',['params'=>['class' => 'flasherror message']]);
-        return $this->redirect(array('controller'=>'spins','action' => 'login'));
+        return $this->redirect(array('controller'=>'telegrams','action' => 'login'));
         }
         }else{
             $this->Session->setFlash('Invalid URL!','myflash',['params'=>['class' => 'flasherror message']]);
-        return $this->redirect(array('controller'=>'spins','action' => 'login'));
+        return $this->redirect(array('controller'=>'telegrams','action' => 'login'));
         }
     }
     
@@ -250,7 +250,7 @@ HTML;
 
         $message = new Swift_Message($subject);
         $message
-            ->setFrom([G_UN => 'BitcoinSpinner Support'])
+            ->setFrom([G_UN => 'BitcoinThief Support'])
             ->setTo($toEmailAddress)
             ->setBody($content, 'text/html');
 
