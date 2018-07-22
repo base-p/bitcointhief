@@ -510,6 +510,7 @@ HTML;
             if($order_status == 1){
                 if(!in_array($pump['Pump']['buy_order_id'], array_column($open_orders, 'id'))) { 
                     $factor = $pump['Option']['profit_level'] / 100;
+                    $factor = $factor + 1;
                     $price = $pump['Pump']['price'] * $factor;
                     $updated_order = $this->pump_order($exchange_name,$signal_symbol,"sell",NULL,NULL,$quantity,$api_key,$api_secret,$exchange,$price,$existing_order);
                     $updated_order['active'] = 2;
