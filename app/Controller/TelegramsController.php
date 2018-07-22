@@ -365,7 +365,7 @@ HTML;
             $exchange_name = $account['Exchange']['exchange_name'];
             $api_key = $account['Option']['api_key'];
             $api_secret = $account['Option']['api_secret'];
-            $this->pump_order($exchange_name,$signal_symbol,"buy",$user_id,$account_id,NULL,$api_key,$api_secret);
+            $this->pump_order($exchange_name,$signal_symbol,"buy",$user_id,$account_id,$btc_amount,$api_key,$api_secret);
         }
         $this->set(compact('options','active_pumps','history_pumps','panic_pumps','cancelled_pumps'));
 
@@ -398,7 +398,7 @@ HTML;
     
 
     protected function pump_order($exchange_name = NULL, $signal_symbol = NULL, $order_type = NULL, $user_id = NULL, $account_id = NULL, $quantity = NULL, $api_key = NULL, $api_secret = NULL, $exchange = NULL, $price = NULL , $existing_order = NULL , $base_symbol = "BTC"){
-        $this->autoRender = false;
+        //$this->autoRender = false;
         if(!isset($exchange)){
             date_default_timezone_set ('UTC');
             require APP . 'Vendor' . DS. 'ccxt'. DS. 'ccxt'. DS. 'ccxt.php';
@@ -635,7 +635,7 @@ HTML;
     }
 
      protected function compare_balance($exchange = NULL, $symbol = NULL){
-         $this->autoRender = false;
+         //$this->autoRender = false;
         try {
             $balance_data = $exchange->fetch_balance ();
             $balance = $balance_data[$symbol]["free"];
