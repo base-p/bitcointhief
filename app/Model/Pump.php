@@ -3,10 +3,9 @@ App::uses('AppModel', 'Model');
 //App::uses('BlowfishPasswordHasher', 'Controller/Component/Auth');
 class Pump extends AppModel {
      var $name = 'Pump';
-<<<<<<< HEAD
+
     var $actsAs = array('Containable');
-=======
->>>>>>> e22a1c2fad969af46b596af93a5b8a278c6b10b1
+
     
    /* public $hasMany = array(
          'Exchange' => array(
