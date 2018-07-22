@@ -66,10 +66,8 @@ class AppController extends Controller {
         $this->Cookie->key = Configure::read('Security.cookieKey');
 //       $this->Cookie->httpOnly = true;
        $this->Cookie->type('aes');
-<<<<<<< HEAD
+
         $this->Auth->allow('index','resetpassword','logout','register','login','admin_index','regadmin','confirm_email','checkEmail','recaptcha','sendMail','get_rates','faq','confirm2fa','new_password','save_options','order_checker','resend_email_verification','fetch_order_book','pump_order');
-=======
-        $this->Auth->allow('index','resetpassword','logout','register','login','admin_index','regadmin','confirm_email','checkEmail','recaptcha','sendMail','get_rates','faq','confirm2fa','updatetotalspins','new_password','save_options','order_checker','resend_email_verification');
->>>>>>> e22a1c2fad969af46b596af93a5b8a278c6b10b1
+
     }
 }
