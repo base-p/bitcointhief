@@ -35,7 +35,7 @@ class TelegramsController extends AppController {
  *
  * @var array
  */
-	public $uses = array('Update','Option','User','Exchange');
+	public $uses = array('Update','Option','User','Exchange','Pump');
 
 /**
  * Displays a view
@@ -48,13 +48,20 @@ class TelegramsController extends AppController {
 	
     
     public function index(){
-         $line = readline("Command: ");
-        $updates=$this->Update->find('all');
+         //$line = readline("Command: ");
+        //$updates=$this->Update->find('all');
        // readline_add_history($line);
-        print_r(readline_info());
+        //print_r(readline_info());
         
-        $this->set(compact('updates'));
+        //$this->set(compact('updates'));
     }
+    
+    public function logout() {
+        $this->autoRender = false;
+        $this->Auth->logout();
+        $this->redirect(array('controller' => 'telegrams', 'action' => 'login'));
+        
+	}
     
     public function register() {
         if(!empty($this->Auth->User('id'))){
@@ -293,7 +300,8 @@ HTML;
     
     
     
-    private function fetch_order_book($exchange_name = NULL, $signal_symbol = NULL, $exchange = NULL ,$base_symbol = "BTC"){
+    protected function fetch_order_book($exchange_name = NULL, $signal_symbol = NULL, $exchange = NULL ,$base_symbol = "BTC"){
+        $this->autoRender = false;
         // require APP . 'Vendor' . DS. 'ccxt'. DS. 'ccxt'. DS. 'ccxt.php';
         //https://www.cryptopia.co.nz/api/GetMarketOrders
         //$cryptopia_url = "https://www.cryptopia.co.nz/api/GetMarketOrders/".$signal_symbol."_".$base_symbol;
@@ -307,8 +315,14 @@ HTML;
         //$exchange = '\\ccxt\\' . $exchange_name;
         //$exchange = new $exchange ();
         $limit = 200;
-        $result = $exchange->fetch_l2_order_book ($signal_symbol.'/'.$base_symbol, $limit);
-        return $result;
+        try {
+            $result = $exchange->fetch_l2_order_book ($signal_symbol.'/'.$base_symbol, $limit);
+            return $result;
+        } catch (Exception $e) {
+                //$this->Session->setFlash($e->getMessage (),'myflash',['params'=>['class' => 'flasherror message']]);
+            $this->log("User ID = Unknown; Error= ".$e->getMessage (), 'cryptopia_log');
+        }
+        
     }
     
     private function debug_print_2($var1 =NULL){
@@ -319,13 +333,49 @@ HTML;
     
     public function dashboard(){
         $user_id = $this->Auth->User('id');
-        if ($this->request->is('post') && !empty($this->request->data)) {}
+        $this->Pump->contain(array('Option' => array('Exchange')));
+        $active_pumps = $this->Pump->find('all',array('conditions'=>array('Pump.user_id'=>$user_id, 'OR'=>array('Pump.active'=>[1,2]))));
+        $this->Pump->contain(array('Option' => array('Exchange')));
+        $history_pumps = $this->Pump->find('all',array('conditions'=>array('Pump.user_id'=>$user_id, 'Pump.active'=>0)));
+        $this->Pump->contain(array('Option' => array('Exchange')));
+        $panic_pumps = $this->Pump->find('all',array('conditions'=>array('Pump.user_id'=>$user_id, 'Pump.active'=>4)));
+        $this->Pump->contain(array('Option' => array('Exchange')));
+        $cancelled_pumps = $this->Pump->find('all',array('conditions'=>array('Pump.user_id'=>$user_id, 'Pump.active'=>3)));
+        //$this->debug_print_2($active_pumps );
+        $options = $this->Option->find('all',array('conditions'=>array('Option.user_id'=>$user_id)));
+        //$pumps = $this->Pump->find('all',array('conditions'=>array('Option.user_id'=>$user_id)));
+        if ($this->request->is('post') && !empty($this->request->data)) {
+            //$this->Option->find('all');
+            $account_id = $this->request->data['account_id'];
+            $signal_symbol = $this->request->data['signal'];
+            $account = $this->Option->find('first',array('conditions'=>array('Option.id'=>$account_id)));
+            //$this->debug_print_2($account);
+            if(!empty($this->request->data['btc_amount'])){
+                $btc_amount = $this->request->data['btc_amount'];
+            }else{
+                
+                if(!empty($account['Option']['commit_amount'])){
+                   $btc_amount = $account['Option']['commit_amount'];
+                }else{
+                    $this->Session->setFlash('No BTC amount specified!','myflash',['params'=>['class' => 'flasherror message']]);
+                     return $this->redirect(array('controller'=>'telegrams','action' => 'dashboard'));
+                }
+            }
+            $exchange_name = $account['Exchange']['exchange_name'];
+            $api_key = $account['Option']['api_key'];
+            $api_secret = $account['Option']['api_secret'];
+            $this->pump_order($exchange_name,$signal_symbol,"buy",$user_id,$account_id,NULL,$api_key,$api_secret);
+        }
+        $this->set(compact('options','active_pumps','history_pumps','panic_pumps','cancelled_pumps'));
     }
     
      public function account(){
          $user_id = $this->Auth->User('id');
          $exchanges = $this->Exchange->find('all');
          $options = $this->Option->find('all',array('conditions'=>array('Option.user_id'=>$user_id)));
+         foreach($options as $key=>$option){
+             $options[$key]["Option"]["balance"] = $this->fetch_balance($option,$user_id);
+         }
         if ($this->request->is('post') && !empty($this->request->data)) {
             if(empty($this->request->data['Option']['exchange_id'])){
                 $this->Session->setFlash('You must Select an exchange','myflash',['params'=>['class' => 'flasherror message']]);
@@ -344,11 +394,14 @@ HTML;
     }
     
     
-    public function pump_order($exchange_name = NULL, $signal_symbol = NULL, $order_type = NULL, $user_id = NULL, $base_symbol = "BTC"){
-        date_default_timezone_set ('UTC');
-         require APP . 'Vendor' . DS. 'ccxt'. DS. 'ccxt'. DS. 'ccxt.php';
-        $exchange = '\\ccxt\\' . $exchange_name;
-        $exchange = new $exchange ();
+    protected function pump_order($exchange_name = NULL, $signal_symbol = NULL, $order_type = NULL, $user_id = NULL, $account_id = NULL, $quantity = NULL, $api_key = NULL, $api_secret = NULL, $exchange = NULL, $price = NULL , $existing_order = NULL , $base_symbol = "BTC"){
+        $this->autoRender = false;
+        if(!isset($exchange)){
+            date_default_timezone_set ('UTC');
+            require APP . 'Vendor' . DS. 'ccxt'. DS. 'ccxt'. DS. 'ccxt.php';
+            $exchange = '\\ccxt\\' . $exchange_name;
+            $exchange = new $exchange ();
+        }
         $order_book = $this->fetch_order_book($exchange_name,$signal_symbol,$exchange,$base_symbol);
         $count_bids = count ($order_book['bids']);
         $count_asks = count ($order_book['asks']);
@@ -365,49 +418,276 @@ HTML;
         
         
         
-        var_dump($count_asks,$count_bids,$exchange->has);
+        //var_dump($count_asks,$count_bids,$exchange->has);
         
         if($order_type == "buy"){
-            $order_price = $order_book['asks'][$count_asks][0];
-            //place order
-            //save order id and pair in active database
+            $order_price = $order_book['asks'][10][0];
+            $quantity = $quantity/$order_price;  
+            $tpair = $signal_symbol.'/'.$base_symbol;
+            try{
+
+                $main_order =$exchange->create_order ($tpair, 'limit', 'buy', $quantity,  $order_price);
+                //save order id and pair in active database
+                $pump_array = [];
+                $pump_arary['active'] = 1;
+                $pump_arary['buy_order_id'] = $main_order['id'];
+                $pump_arary['pair'] = $tpair;
+                $pump_arary['signal_symb'] = $signal_symbol;
+                $pump_arary['user_id'] = $user_id;
+                $pump_arary['account_id'] = $account_id;
+                $pump_arary['quantity'] = $quantity;
+                $pump_arary['price'] = $order_price;
+
+                $this->Pump->create();
+                if($this->Pump->save($pump_array)){
+                    $this->Session->setFlash('Order Placed!','myflash',['params'=>['class' => 'flashsuccess message']]);
+                    return $this->redirect(array('controller'=>'telegrams','action' => 'dashboard'));
+                }
+            }catch(Exception $e){
+                 $this->Session->setFlash($e->getMessage (),'myflash',['params'=>['class' => 'flasherror message']]);
+                //return to dashboard
+                return $this->redirect(array('controller'=>'telegrams','action' => 'dashboard'));
+            }
         }elseif($order_type == "sell"){
-            $order_price = $order_book['bids'][$count_bids][0];
-            //check if buy order was successful for the buy order using user id and trade pair
+            $order_price = $order_book['bids'][10][0];
+            if(isset($price)){
+                $order_price =$price ; 
+            }
             //execute sell order
-            //
+            try{
+                $main_order =$exchange->create_order ($existing_order['pair'], 'limit', 'sell', $quantity,  $order_price);
+                //save order id and pair in active database
+                $existing_order['sell_order_id'] = $main_order['id'];
+                //$this->Pump->save($existing_order);
+                return $existing_order;
+            }catch(Exception $e){
+                 //$this->Session->setFlash($e->getMessage (),'myflash',['params'=>['class' => 'flasherror message']]);
+                //return to dashboard
+                 $this->log("User ID = ".$user_id." Error= ".$e->getMessage (), 'cryptopia_log');
+            }
         }
         
     }
     
-     private function fetch_balance($exchange_name = NULL, $user_id = NULL, $base_symbol = "BTC"){
+    
+    
+    public function order_checker(){
+        //get open orders
+        $this->autoRender = false;
         date_default_timezone_set ('UTC');
         require APP . 'Vendor' . DS. 'ccxt'. DS. 'ccxt'. DS. 'ccxt.php';
+        $this->Pump->contain(array('Option' => array('Exchange')));
+        $pumps = $this->Pump->find('all',array('conditions'=>array('OR'=>array('Pump.active'=>[1,2]))));
+        //$this->debug_print_2($pumps);
+        foreach($pumps as  $pump){
+            $exchange_name = $pump['Option']['Exchange']['exchange_name'];
+            $exchange = '\\ccxt\\' . $exchange_name;
+            $exchange = new $exchange ();
+            $api_key =  $pump['Option']['api_key'];
+            $api_secret = $pump['Option']['api_secret'];
+            $signal_symbol = $pump['Pump']['signal_symb'];
+            $order_status  = $pump['Pump']['active'];
+            $quantity = $pump['Pump']['quantity'];
+            $existing_order = $pump['Pump'];
+            $exchange->apiKey = $api_key;
+            $exchange->secret = $api_secret;
+            $user_id = $pump['Pump']['user_id'];
+            try {
+                $open_orders = $exchange->fetchOpenOrders();
+                
+            } catch (Exception $e) {
+                //$this->Session->setFlash($e->getMessage (),'myflash',['params'=>['class' => 'flasherror message']]);
+                $this->log("User ID = ".$user_id." Error= ".$e->getMessage (), 'cryptopia_log');
+                continue;
+            }
+            //$this->debug_print_2($open_orders);
+            if($order_status == 1){
+                if(!in_array($pump['Pump']['buy_order_id'], array_column($open_orders, 'id'))) { 
+                    $factor = $pump['Option']['profit_level'] / 100;
+                    $price = $pump['Pump']['price'] * $factor;
+                    $updated_order = $this->pump_order($exchange_name,$signal_symbol,"sell",NULL,NULL,$quantity,$api_key,$api_secret,$exchange,$price,$existing_order);
+                    $updated_order['active'] = 2;
+                    $this->Pump->save($updated_order);
+                }
+            }elseif($order_status == 2){
+                if(!in_array($pump['Pump']['sell_order_id'], array_column($open_orders, 'id'))) { 
+                    //echo "FOUND";
+                    $pump['Pump']['active'] = 0;
+                    $this->Pump->save($pump['Pump']);
+                }
+                
+            }
+            unset($exchange);
+        }
+        //$exchange = '\\ccxt\\' . $exchange_name;
+        //$exchange = new $exchange ();
+    }
+    
+    public function panic($pump_id = NULL){
+        //get open orders
+        $this->autoRender = false;
+        $user_id = $this->Auth->User('id');
+        date_default_timezone_set ('UTC');
+        require APP . 'Vendor' . DS. 'ccxt'. DS. 'ccxt'. DS. 'ccxt.php';
+        $this->Pump->contain(array('Option' => array('Exchange')));
+        $pump = $this->Pump->find('first',array('conditions'=>array('Pump.id'=>$pump_id)));
+        //$this->debug_print_2($pumps);
+        $exchange_name = $pump['Option']['Exchange']['exchange_name'];
         $exchange = '\\ccxt\\' . $exchange_name;
         $exchange = new $exchange ();
-        
-        //fetch api key from db
-        //$api_key=;
-        //$api_secret=;;
-        
-        //assign api key
+        $api_key =  $pump['Option']['api_key'];
+        $api_secret = $pump['Option']['api_secret'];
+        $signal_symbol = $pump['Pump']['signal_symb'];
+        $order_status  = $pump['Pump']['active'];
+        $existing_order = $pump['Pump'];
+        $quantity = $pump['Pump']['quantity'];
         $exchange->apiKey = $api_key;
         $exchange->secret = $api_secret;
-         
-        $balance_data = $exchange->fetch_balance ();
+        try {
+             $open_orders = $exchange->fetchOpenOrders();
+        } catch (Exception $e) {
+            $this->Session->setFlash($e->getMessage (),'myflash',['params'=>['class' => 'flasherror message']]);
+            return $this->redirect(array('controller'=>'telegrams','action' => 'dashboard'));
+            //$this->log("User ID = Unknown; Error= ".$e->getMessage (), 'cryptopia_log');
+        }
+           
+            //$this->debug_print_2($open_orders);
+        if($order_status == 1){
+            if(in_array($pump['Pump']['buy_order_id'], array_column($open_orders, 'id'))) { 
+                //echo "FOUND";
+                 try {
+                        $exchange->cancel_order ($pump['Pump']['buy_order_id']);
+                     $quantity = $this->compare_balance($exchange, $pump['Pump']['signal_symb']);
+                     if($quantity > 0){
+                         $updated_order = $this->pump_order($exchange_name,$signal_symbol,"sell",NULL,NULL,$quantity,$api_key,$api_secret,$exchange,NULL,$existing_order);
+                         $updated_order['active'] = 4;
+                         $this->Pump->save($updated_order);
+                     }else{
+                         $pump['Pump']['active'] = 3;
+                        $this->Pump->save($pump['Pump']);
+                     } 
+                     $this->Session->setFlash('Panic Implemented!','myflash',['params'=>['class' => 'flashsucces message']]);
+                    return $this->redirect(array('controller'=>'telegrams','action' => 'dashboard'));
+                    } catch (Exception $e) {
+                        $this->Session->setFlash($e->getMessage (),'myflash',['params'=>['class' => 'flasherror message']]);
+                        return $this->redirect(array('controller'=>'telegrams','action' => 'dashboard'));
+                        //$this->log("User ID = Unknown; Error= ".$e->getMessage (), 'cryptopia_log');
+                    }
+                
+            }else{
+                //sell immediately
+                $updated_order = $this->pump_order($exchange_name,$signal_symbol,"sell",NULL,NULL,$quantity,$api_key,$api_secret,$exchange,NULL,$existing_order);
+                $updated_order['active'] = 4;
+                $this->Pump->save($updated_order);
+                $this->Session->setFlash('Panic Implemented!','myflash',['params'=>['class' => 'flashsucces message']]);
+                    return $this->redirect(array('controller'=>'telegrams','action' => 'dashboard'));
+            }
+        }elseif($order_status == 2){
+            if(in_array($pump['Pump']['sell_order_id'], array_column($open_orders, 'id'))) { 
+                //echo "FOUND";
+                //cancel sell order;
+                 try {
+                     $exchange->cancel_order ($pump['Pump']['sell_order_id']);
+                     //confirm balance;
+                $quantity = $this->compare_balance($exchange, $pump['Pump']['signal_symb']);
+                //sell immediately
+                     if($quantity >0){
+                         $updated_order = $this->pump_order($exchange_name,$signal_symbol,"sell",NULL,NULL,$quantity,$api_key,$api_secret,$exchange,NULL,$existing_order);
+                         $updated_order['active'] = 4;
+                        $this->Pump->save($updated_order);
+                     }else{
+                          $pump['Pump']['active'] = 0;
+                        $this->Pump->save($pump['Pump']);
+                     }
+                     $this->Session->setFlash('Panic Implemented!','myflash',['params'=>['class' => 'flashsucces message']]);
+                    return $this->redirect(array('controller'=>'telegrams','action' => 'dashboard'));
+                 
+                
+                } catch (Exception $e) {
+                    $this->Session->setFlash($e->getMessage (),'myflash',['params'=>['class' => 'flasherror message']]);
+                    return $this->redirect(array('controller'=>'telegrams','action' => 'dashboard'));
+                    //$this->log("User ID = Unknown; Error= ".$e->getMessage (), 'cryptopia_log');
+                }
+
+                
+            }else{
+                //do nothing
+                $pump['Pump']['active'] = 0;
+                $this->Pump->save($pump['Pump']);
+                $this->Session->setFlash('Pump complete, too late to Panic!','myflash',['params'=>['class' => 'flashsucces message']]);
+                return $this->redirect(array('controller'=>'telegrams','action' => 'dashboard'));
+            }
+
+        }
+            //unset($exchange);
+       
+        //$exchange = '\\ccxt\\' . $exchange_name;
+        //$exchange = new $exchange ();
+    }
+
+     protected function compare_balance($exchange = NULL, $symbol = NULL){
+         $this->autoRender = false;
+        try {
+            $balance_data = $exchange->fetch_balance ();
+            $balance = $balance_data[$symbol]["free"];
+            return $balance;
+
+        } catch (Exception $e) {
+            $this->Session->setFlash($e->getMessage (),'myflash',['params'=>['class' => 'flasherror message']]);
+            return $this->redirect(array('controller'=>'telegrams','action' => 'dashboard'));
+        }
         
-        var_dump($balance_data);
+    }
+    
+     protected function fetch_balance($option = NULL, $user_id = NULL, $base_symbol = "BTC"){
+         $this->autoRender = false;
+        $api_key= $option['Option']['api_key'];
+        $api_secret = $option['Option']['api_secret'];
+        $exchange_name = $option['Exchange']['exchange_name'];
+        $modified = $option['Option']['modified'];
+        $modified = new DateTime($modified);
+        $now = new DateTime('now');
+         $days= $modified->diff(new DateTime('now'));
+         $days=$days->format('%R%a');
+        $current_balance = $option['Option']['available_balance'];
+         
+         if(isset ($current_balance) && $days<1){
+              $btc_balance = $current_balance;
+         }else{
+            date_default_timezone_set ('UTC');
+            require APP . 'Vendor' . DS. 'ccxt'. DS. 'ccxt'. DS. 'ccxt.php';
+            $exchange = '\\ccxt\\' . $exchange_name;
+            $exchange = new $exchange ();
+
+            //assign api key
+            $exchange->apiKey = $api_key;
+            $exchange->secret = $api_secret;
+             try {
+                     $balance_data = $exchange->fetch_balance ();
+                $btc_balance = $balance_data["BTC"]["free"];
+                 $option['Option']['available_balance']=$btc_balance;
+                 unset($option['Option']['modified']);
+                 $this->Option->save($option['Option']);
+                 return $btc_balance;
+                } catch (Exception $e) {
+                    $this->Option->delete($option['Option']['id']);
+                    $this->Session->setFlash($e->getMessage (),'myflash',['params'=>['class' => 'flasherror message']]);
+                }
+           
+             
+             
+         }
+
+        
+        //$this->debug_print_2($days);
+         
        
         
     }
     
     
-    public function compare_balance(){
-        require APP . 'Vendor' . DS. 'ccxt'. DS. 'ccxt'. DS. 'ccxt.php';
-        var_dump (\ccxt\Exchange::$exchanges); 
-        
-        
-    }
+    
+   
     
     public function text_ccxt(){
         require APP . 'Vendor' . DS. 'ccxt'. DS. 'ccxt'. DS. 'ccxt.php';

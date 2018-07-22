@@ -34,6 +34,15 @@
             
             <input required id='apisecret' type='text' class='' name="data[Option][api_secret]"/>
         </div>
+        <div class="input-field col s12" >
+            <label for='profitlevel' >Profit Level(in percentage E.g. 100, 10, 140 etc)</label>
+            <input required id='profitlevel' type='text' name="data[Option][profit_level]"/>
+        </div>
+        <div class="input-field col s12" >
+            <label for='commitamount' >BTC amount to commit to each Signal (in BTC, not SATS)</label>
+            <input required id='commitamount' type='text' name="data[Option][commit_amount]"/>
+        </div>
+        
         
 <!--    
     <div id='recaptcha' class="g-recaptcha" data-sitekey="6Ld_1UEUAAAAAADb_csEomGPzZUh9dZmCyRAYtl8" data-callback="onSubmit" data-size="invisible" data-badge="bottomleft">
@@ -58,6 +67,8 @@
                         <th>API KEY</th>
                         <th>API SECRET</th>
                         <th>Available Balance BTC</th>
+                        <th>PROFIT LEVEL</th>
+                        <th>BTC PER SIGNAL </th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -69,6 +80,8 @@
                         <td><?= $option['Option']['api_key']; ?></td>
                         <td><?= $option['Option']['api_secret']; ?></td>
                         <td><?= $option['Option']['balance']; ?></td>
+                        <td><?= $option['Option']['profit_level']; ?></td>
+                        <td><?= $option['Option']['commit_amount']; ?></td>
                         <td><a href="<?= SITEPATH.'/telegrams/editoption/'.$option['Option']['id'] ; ?>">Edit</a></td>
                     </tr>
                    <?php } ?> 

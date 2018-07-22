@@ -26,6 +26,7 @@
  * to use (in this case, /app/View/Pages/home.ctp)...
  */
 	Router::connect('/', array('controller' => 'telegrams', 'action' => 'index'));
+    //Router::connect('/', array('controller' => 'pages', 'action' => 'display', 'home'));
 	Router::connect('/receiver', array('controller' => 'telegrams', 'action' => 'receiver'));
 	Router::connect('/madeline', array('controller' => 'telegrams', 'action' => 'madeline'));
 	Router::connect('/register', array('controller' => 'telegrams', 'action' => 'register'));
@@ -33,6 +34,8 @@
 	Router::connect('/account', array('controller' => 'telegrams', 'action' => 'account'));
 	Router::connect('/dashboard', array('controller' => 'telegrams', 'action' => 'dashboard'));
 	Router::connect('/resetpassword', array('controller' => 'telegrams', 'action' => 'resetpassword'));
+	Router::connect('/orderchecker', array('controller' => 'telegrams', 'action' => 'order_checker'));
+	Router::connect('/logout', array('controller' => 'telegrams', 'action' => 'logout'));
 /**
  * ...and connect the rest of 'Pages' controller's URLs.
  */

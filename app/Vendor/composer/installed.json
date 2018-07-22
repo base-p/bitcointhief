@@ -49,17 +49,17 @@
     },
     {
         "name": "ccxt/ccxt",
-        "version": "1.16.40",
-        "version_normalized": "1.16.40.0",
+        "version": "1.16.84",
+        "version_normalized": "1.16.84.0",
         "source": {
             "type": "git",
             "url": "https://github.com/ccxt/ccxt.git",
-            "reference": "302012dc486ffef33de8766219d1a68532e32a8d"
+            "reference": "0132cfcb60a619e4eed7a3dcf0e890c893c404ee"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/ccxt/ccxt/zipball/302012dc486ffef33de8766219d1a68532e32a8d",
-            "reference": "302012dc486ffef33de8766219d1a68532e32a8d",
+            "url": "https://api.github.com/repos/ccxt/ccxt/zipball/0132cfcb60a619e4eed7a3dcf0e890c893c404ee",
+            "reference": "0132cfcb60a619e4eed7a3dcf0e890c893c404ee",
             "shasum": ""
         },
         "require": {
@@ -72,7 +72,7 @@
         "require-dev": {
             "phpunit/phpunit": "~6"
         },
-        "time": "2018-07-16T20:45:50+00:00",
+        "time": "2018-07-21T20:22:29+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
