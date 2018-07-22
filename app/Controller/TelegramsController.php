@@ -650,7 +650,7 @@ HTML;
     
 
      protected function fetch_balance($option = NULL, $user_id = NULL, $base_symbol = "BTC"){
-         $this->autoRender = false;
+         //$this->autoRender = false;
         $api_key= $option['Option']['api_key'];
         $api_secret = $option['Option']['api_secret'];
         $exchange_name = $option['Exchange']['exchange_name'];
