@@ -1,10 +1,8 @@
 <a href="<?= SITEPATH.'account';?>">My Account</a>
 
-<<<<<<< HEAD
+
 <a href="<?= SITEPATH.'logout';?>">LOGOUT</a>
-=======
-<a href="<?= SITEPATH.'telegrams/panicsell/';?>">Panic Sell</a>
->>>>>>> e22a1c2fad969af46b596af93a5b8a278c6b10b1
+
 
 
 <body class=" light-blue lighten-1">
@@ -58,11 +56,9 @@
         </div>
     </div>
     </div>
-<<<<<<< HEAD
+
     <h1>Active</h1>
-=======
-    <h1>Active Pumps</h1>
->>>>>>> e22a1c2fad969af46b596af93a5b8a278c6b10b1
+
     <table class="highlight striped responsive-table">
                 <thead>
                     <tr>
@@ -75,7 +71,7 @@
                     </tr>
                 </thead>
                 <tbody>
-<<<<<<< HEAD
+
                     <?php foreach($active_pumps as $active_pump){ ?>
                     <tr>
                         <td><?= $active_pump['Pump']['id']; ?></td>
@@ -190,18 +186,7 @@
                         <td><?= $active_pump['Pump']['active']; ?></td>
                         
                         <td><a href="<?= SITEPATH.'/telegrams/editoption/'.$active_pump['Pump']['id'] ; ?>">Edit</a></td>
-=======
-                    <?php foreach($options as $option){ ?>
-                    <tr>
-                        <td><?= $option['Option']['id']; ?></td>
-                        <td><?= $option['Exchange']['exchange_name']; ?></td>
-                        <td><?= $option['Option']['api_key']; ?></td>
-                        <td><?= $option['Option']['api_secret']; ?></td>
-                        <td><?= $option['Option']['balance']; ?></td>
-                        <td><?= $option['Option']['profit_level']; ?></td>
-                        <td><?= $option['Option']['commit_amount']; ?></td>
-                        <td><a href="<?= SITEPATH.'/telegrams/editoption/'.$option['Option']['id'] ; ?>">Edit</a></td>
->>>>>>> e22a1c2fad969af46b596af93a5b8a278c6b10b1
+
                     </tr>
                    <?php } ?> 
                 </tbody>
