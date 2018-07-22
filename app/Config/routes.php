@@ -25,8 +25,13 @@
  * its action called 'display', and we pass a param to select the view file
  * to use (in this case, /app/View/Pages/home.ctp)...
  */
+<<<<<<< HEAD
 	Router::connect('/', array('controller' => 'telegrams', 'action' => 'index'));
     //Router::connect('/', array('controller' => 'pages', 'action' => 'display', 'home'));
+=======
+	//Router::connect('/', array('controller' => 'telegrams', 'action' => 'index'));
+Router::connect('/', array('controller' => 'pages', 'action' => 'display', 'home'));
+>>>>>>> e22a1c2fad969af46b596af93a5b8a278c6b10b1
 	Router::connect('/receiver', array('controller' => 'telegrams', 'action' => 'receiver'));
 	Router::connect('/madeline', array('controller' => 'telegrams', 'action' => 'madeline'));
 	Router::connect('/register', array('controller' => 'telegrams', 'action' => 'register'));
