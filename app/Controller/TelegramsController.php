@@ -422,7 +422,7 @@ HTML;
         //var_dump($count_asks,$count_bids,$exchange->has);
         
         if($order_type == "buy"){
-            $order_price = $order_book['bids'][0][0];
+            $order_price = $order_book['asks'][5][0];
             //$order_price = "10";
             $quantity = $quantity/$order_price;  
             $tpair = $signal_symbol.'/'.$base_symbol;
@@ -473,7 +473,7 @@ HTML;
                 return $this->redirect(array('controller'=>'telegrams','action' => 'dashboard'));
             }
         }elseif($order_type == "sell"){
-            $order_price = $order_book['bids'][10][0];
+            $order_price = $order_book['bids'][5][0];
             if(isset($price)){
                 $order_price =$price ; 
             }
