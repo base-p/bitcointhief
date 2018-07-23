@@ -440,11 +440,11 @@ HTML;
                 $pump_array['quantity'] = $quantity;
                 $pump_array['price'] = $order_price;
 
-                $this->Pump->create();
-                if($this->Pump->save($pump_array)){
-                    $this->Session->setFlash('Order Placed!','myflash',['params'=>['class' => 'flashsuccess message']]);
-                    return $this->redirect(array('controller'=>'telegrams','action' => 'dashboard'));
-                }
+                //$this->Pump->create();
+                //if($this->Pump->save($pump_array)){
+                    //$this->Session->setFlash('Order Placed!','myflash',['params'=>['class' => 'flashsuccess message']]);
+                    //return $this->redirect(array('controller'=>'telegrams','action' => 'dashboard'));
+                //}
 
             }catch(Exception $e){
                  $this->Session->setFlash($e->getMessage (),'myflash',['params'=>['class' => 'flasherror message']]);
