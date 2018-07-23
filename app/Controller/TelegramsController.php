@@ -411,9 +411,6 @@ HTML;
         $count_bids = $count_bids - 1;
         $count_asks = $count_asks - 1;
         
-        //fetch api key from db
-        //$api_key=;
-        //$api_secret=;;
         
         //assign api key
         $exchange->apiKey = $api_key;
@@ -425,6 +422,7 @@ HTML;
         
         if($order_type == "buy"){
             $order_price = $order_book['asks'][10][0];
+            //$order_price = "10";
             $quantity = $quantity/$order_price;  
             $tpair = $signal_symbol.'/'.$base_symbol;
             try{
@@ -432,14 +430,14 @@ HTML;
                 $main_order =$exchange->create_order ($tpair, 'limit', 'buy', $quantity,  $order_price);
                 //save order id and pair in active database
                 $pump_array = [];
-                $pump_arary['active'] = 1;
-                $pump_arary['buy_order_id'] = $main_order['id'];
-                $pump_arary['pair'] = $tpair;
-                $pump_arary['signal_symb'] = $signal_symbol;
-                $pump_arary['user_id'] = $user_id;
-                $pump_arary['account_id'] = $account_id;
-                $pump_arary['quantity'] = $quantity;
-                $pump_arary['price'] = $order_price;
+                $pump_array['active'] = 1;
+                $pump_array['buy_order_id'] =  $main_order['id'];
+                $pump_array['pair'] = $tpair;
+                $pump_array['signal_symb'] = $signal_symbol;
+                $pump_array['user_id'] = $user_id;
+                $pump_array['account_id'] = $account_id;
+                $pump_array['quantity'] = $quantity;
+                $pump_array['price'] = $order_price;
 
                 $this->Pump->create();
                 if($this->Pump->save($pump_array)){
