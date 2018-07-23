@@ -365,7 +365,8 @@ HTML;
             $exchange_name = $account['Exchange']['exchange_name'];
             $api_key = $account['Option']['api_key'];
             $api_secret = $account['Option']['api_secret'];
-            $this->pump_order($exchange_name,$signal_symbol,"buy",$user_id,$account_id,$btc_amount,$api_key,$api_secret);
+            $profit = $account['Option']['profit_level'];
+            $this->pump_order($exchange_name,$signal_symbol,"buy",$user_id,$account_id,$btc_amount,$api_key,$api_secret,NULL,NULL,NULL,"BTC",$profit);
         }
         $this->set(compact('options','active_pumps','history_pumps','panic_pumps','cancelled_pumps'));
 
@@ -397,7 +398,7 @@ HTML;
     
     
 
-    protected function pump_order($exchange_name = NULL, $signal_symbol = NULL, $order_type = NULL, $user_id = NULL, $account_id = NULL, $quantity = NULL, $api_key = NULL, $api_secret = NULL, $exchange = NULL, $price = NULL , $existing_order = NULL , $base_symbol = "BTC"){
+    protected function pump_order($exchange_name = NULL, $signal_symbol = NULL, $order_type = NULL, $user_id = NULL, $account_id = NULL, $quantity = NULL, $api_key = NULL, $api_secret = NULL, $exchange = NULL, $price = NULL , $existing_order = NULL , $base_symbol = "BTC",$profit = NULL){
         //$this->autoRender = false;
         if(!isset($exchange)){
             date_default_timezone_set ('UTC');
@@ -426,25 +427,45 @@ HTML;
             $quantity = $quantity/$order_price;  
             $tpair = $signal_symbol.'/'.$base_symbol;
             try{
-
+                $status_code = 1;
                 $main_order =$exchange->create_order ($tpair, 'limit', 'buy', $quantity,  $order_price);
                 //save order id and pair in active database
-                $this->debug_print_2($main_order);
+                //$this->debug_print_2($main_order);
+                if($main_order['status'] == "closed"){
+                    $main_order['id'] = 5212806;
+                };
                 $pump_array = [];
-                $pump_array['active'] = 1;
+                $pump_array['active'] = $status_code;
                 $pump_array['buy_order_id'] =  $main_order['id'];
                 $pump_array['pair'] = $tpair;
                 $pump_array['signal_symb'] = $signal_symbol;
                 $pump_array['user_id'] = $user_id;
                 $pump_array['account_id'] = $account_id;
                 $pump_array['quantity'] = $quantity;
-                $pump_array['price'] = $order_price;
+                $pump_array['price'] = $main_order['price'];
 
-                //$this->Pump->create();
-                //if($this->Pump->save($pump_array)){
-                    //$this->Session->setFlash('Order Placed!','myflash',['params'=>['class' => 'flashsuccess message']]);
-                    //return $this->redirect(array('controller'=>'telegrams','action' => 'dashboard'));
-                //}
+                $this->Pump->create();
+                if($this->Pump->save($pump_array)){
+                    if($pump_array['buy_order_id'] == 5212806){
+                        $new_pump_id = $this->Pump->id;
+                        $new_pump = $this->Pump->find('first',array('conditions'=>array('Pump.id'=>$new_pump_id)));
+                        $factor = $profit / 100;
+                        $factor = $factor + 1;
+                        $price = $main_order['price'] * $factor;
+                        $recurs_order = $this->pump_order($exchange_name,$signal_symbol,"sell",NULL,NULL,$main_order['filled'],$api_key,$api_secret,$exchange,$price,$new_pump['Pump']);
+                        if($recurs_order['sell_order_id']==5212806){
+                            $recurs_order['active'] = 0;
+                            $this->Session->setFlash('Buy Order Executed, Sell order Executed!','myflash',['params'=>['class' => 'flashsuccess message']]);
+                        }else{
+                            $recurs_order['active'] = 2;
+                            $this->Session->setFlash('Buy Order Executed, Sell order Placed!','myflash',['params'=>['class' => 'flashsuccess message']]);
+                        }
+                        $this->Pump->save($recurs_order);
+                        return $this->redirect(array('controller'=>'telegrams','action' => 'dashboard'));
+                    }
+                    $this->Session->setFlash('Order Placed!','myflash',['params'=>['class' => 'flashsuccess message']]);
+                    return $this->redirect(array('controller'=>'telegrams','action' => 'dashboard'));
+                }
 
             }catch(Exception $e){
                  $this->Session->setFlash($e->getMessage (),'myflash',['params'=>['class' => 'flasherror message']]);
@@ -460,12 +481,15 @@ HTML;
             //execute sell order
             try{
                 $main_order =$exchange->create_order ($existing_order['pair'], 'limit', 'sell', $quantity,  $order_price);
+                if($main_order['status'] == "closed"){
+                    $main_order['id'] = 5212806;
+                };
                 //save order id and pair in active database
                 $existing_order['sell_order_id'] = $main_order['id'];
                 //$this->Pump->save($existing_order);
                 return $existing_order;
             }catch(Exception $e){
-                 //$this->Session->setFlash($e->getMessage (),'myflash',['params'=>['class' => 'flasherror message']]);
+                 $this->Session->setFlash($e->getMessage (),'myflash',['params'=>['class' => 'flasherror message']]);
                 //return to dashboard
                  $this->log("User ID = ".$user_id." Error= ".$e->getMessage (), 'cryptopia_log');
             }
@@ -506,16 +530,20 @@ HTML;
                 continue;
             }
             //$this->debug_print_2($open_orders);
-            if($order_status == 1){
+            if($order_status == 1 && $pump['Pump']['buy_order_id'] != 5212806){
                 if(!in_array($pump['Pump']['buy_order_id'], array_column($open_orders, 'id'))) { 
                     $factor = $pump['Option']['profit_level'] / 100;
                     $factor = $factor + 1;
                     $price = $pump['Pump']['price'] * $factor;
                     $updated_order = $this->pump_order($exchange_name,$signal_symbol,"sell",NULL,NULL,$quantity,$api_key,$api_secret,$exchange,$price,$existing_order);
-                    $updated_order['active'] = 2;
+                    if($updated_order['sell_order_id']==5212806){
+                            $updated_order['active'] = 0;
+                        }else{
+                            $updated_order['active'] = 2;
+                        }
                     $this->Pump->save($updated_order);
                 }
-            }elseif($order_status == 2){
+            }elseif($order_status == 2 && $pump['Pump']['sell_order_id'] != 5212806){
                 if(!in_array($pump['Pump']['sell_order_id'], array_column($open_orders, 'id'))) { 
                     //echo "FOUND";
                     $pump['Pump']['active'] = 0;
