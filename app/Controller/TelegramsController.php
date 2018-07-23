@@ -422,7 +422,7 @@ HTML;
         //var_dump($count_asks,$count_bids,$exchange->has);
         
         if($order_type == "buy"){
-            $order_price = $order_book['asks'][10][0];
+            $order_price = $order_book['bids'][1][0];
             //$order_price = "10";
             $quantity = $quantity/$order_price;  
             $tpair = $signal_symbol.'/'.$base_symbol;
