@@ -429,6 +429,7 @@ HTML;
 
                 $main_order =$exchange->create_order ($tpair, 'limit', 'buy', $quantity,  $order_price);
                 //save order id and pair in active database
+                $this->debug_print_2($main_order);
                 $pump_array = [];
                 $pump_array['active'] = 1;
                 $pump_array['buy_order_id'] =  $main_order['id'];
