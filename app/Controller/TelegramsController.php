@@ -48,6 +48,7 @@ class TelegramsController extends AppController {
 	
     
     public function index(){
+        $this->layout = 'landing';
          //$line = readline("Command: ");
         //$updates=$this->Update->find('all');
        // readline_add_history($line);
@@ -57,6 +58,7 @@ class TelegramsController extends AppController {
     }
     
     public function logout() {
+        
         $this->autoRender = false;
         $this->Auth->logout();
         $this->redirect(array('controller' => 'telegrams', 'action' => 'login'));
