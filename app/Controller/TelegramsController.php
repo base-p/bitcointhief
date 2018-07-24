@@ -590,7 +590,7 @@ HTML;
         }
            
             //$this->debug_print_2($open_orders);
-        if($order_status == 1){
+        if($order_status == 1 ){
             if(in_array($pump['Pump']['buy_order_id'], array_column($open_orders, 'id'))) { 
                 //echo "FOUND";
                  try {
@@ -598,8 +598,10 @@ HTML;
                      $quantity = $this->compare_balance($exchange, $pump['Pump']['signal_symb']);
                      if($quantity > 0){
                          $updated_order = $this->pump_order($exchange_name,$signal_symbol,"sell",NULL,NULL,$quantity,$api_key,$api_secret,$exchange,NULL,$existing_order);
-                         $updated_order['active'] = 4;
-                         $this->Pump->save($updated_order);
+                         if(!empty($updated_order)){
+                             $updated_order['active'] = 4;
+                             $this->Pump->save($updated_order);
+                         }
                      }else{
                          $pump['Pump']['active'] = 3;
                         $this->Pump->save($pump['Pump']);
@@ -615,9 +617,11 @@ HTML;
             }else{
                 //sell immediately
                 $updated_order = $this->pump_order($exchange_name,$signal_symbol,"sell",NULL,NULL,$quantity,$api_key,$api_secret,$exchange,NULL,$existing_order);
-                $updated_order['active'] = 4;
-                $this->Pump->save($updated_order);
-                $this->Session->setFlash('Panic Implemented!','myflash',['params'=>['class' => 'flashsucces message']]);
+                if(!empty($updated_order)){
+                    $updated_order['active'] = 4;
+                    $this->Pump->save($updated_order);
+                     $this->Session->setFlash('Panic Implemented!','myflash',['params'=>['class' => 'flashsucces message']]);
+                }
                     return $this->redirect(array('controller'=>'telegrams','action' => 'dashboard'));
             }
         }elseif($order_status == 2){
@@ -631,8 +635,10 @@ HTML;
                 //sell immediately
                      if($quantity >0){
                          $updated_order = $this->pump_order($exchange_name,$signal_symbol,"sell",NULL,NULL,$quantity,$api_key,$api_secret,$exchange,NULL,$existing_order);
-                         $updated_order['active'] = 4;
-                        $this->Pump->save($updated_order);
+                         if(!empty($updated_order)){
+                             $updated_order['active'] = 4;
+                            $this->Pump->save($updated_order);
+                         }
                      }else{
                           $pump['Pump']['active'] = 0;
                         $this->Pump->save($pump['Pump']);
