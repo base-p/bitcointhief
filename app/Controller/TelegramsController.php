@@ -638,12 +638,13 @@ HTML;
                          if(!empty($updated_order)){
                              $updated_order['active'] = 4;
                             $this->Pump->save($updated_order);
+                             $this->Session->setFlash('Panic Implemented!','myflash',['params'=>['class' => 'flashsucces message']]);
                          }
                      }else{
                           $pump['Pump']['active'] = 0;
                         $this->Pump->save($pump['Pump']);
+                         $this->Session->setFlash('Panic Implemented!','myflash',['params'=>['class' => 'flashsucces message']]);
                      }
-                     $this->Session->setFlash('Panic Implemented!','myflash',['params'=>['class' => 'flashsucces message']]);
                     return $this->redirect(array('controller'=>'telegrams','action' => 'dashboard'));
                  
                 
@@ -655,10 +656,23 @@ HTML;
 
                 
             }else{
+                $quantity = $this->compare_balance($exchange, $pump['Pump']['signal_symb']);
                 //do nothing
-                $pump['Pump']['active'] = 0;
-                $this->Pump->save($pump['Pump']);
-                $this->Session->setFlash('Pump complete, too late to Panic!','myflash',['params'=>['class' => 'flashsucces message']]);
+                if($quantity >0){
+                         $updated_order = $this->pump_order($exchange_name,$signal_symbol,"sell",NULL,NULL,$quantity,$api_key,$api_secret,$exchange,NULL,$existing_order);
+                         if(!empty($updated_order)){
+                             $updated_order['active'] = 4;
+                            $this->Pump->save($updated_order);
+                             $this->Session->setFlash('Panic Implemented!','myflash',['params'=>['class' => 'flashsucces message']]);
+                         }else{
+                             $this->Session->setFlash('Please sell Manually, On Exchange Website!','myflash',['params'=>['class' => 'flasherror message']]);
+                         }
+                     }else{
+                         $pump['Pump']['active'] = 0;
+                        $this->Pump->save($pump['Pump']);
+                        $this->Session->setFlash('Pump complete, too late to Panic!','myflash',['params'=>['class' => 'flashsucces message']]);
+                     }
+                
                 return $this->redirect(array('controller'=>'telegrams','action' => 'dashboard'));
             }
 
