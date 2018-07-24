@@ -441,7 +441,7 @@ HTML;
                 $pump_array['signal_symb'] = $signal_symbol;
                 $pump_array['user_id'] = $user_id;
                 $pump_array['account_id'] = $account_id;
-                $pump_array['quantity'] = $quantity;
+                $pump_array['quantity'] = $main_order['amount'];
                 $pump_array['price'] = $main_order['price'];
 
                 $this->Pump->create();
@@ -453,6 +453,7 @@ HTML;
                         $factor = $factor + 1;
                         $price = $main_order['price'] * $factor;
                         $recurs_order = $this->pump_order($exchange_name,$signal_symbol,"sell",NULL,NULL,$main_order['filled'],$api_key,$api_secret,$exchange,$price,$new_pump['Pump']);
+                        if(!empty($recurs_order)){
                         if($recurs_order['sell_order_id']==5212806){
                             $recurs_order['active'] = 0;
                             $this->Session->setFlash('Buy Order Executed, Sell order Executed!','myflash',['params'=>['class' => 'flashsuccess message']]);
@@ -461,6 +462,7 @@ HTML;
                             $this->Session->setFlash('Buy Order Executed, Sell order Placed!','myflash',['params'=>['class' => 'flashsuccess message']]);
                         }
                         $this->Pump->save($recurs_order);
+                    }
                         return $this->redirect(array('controller'=>'telegrams','action' => 'dashboard'));
                     }
                     $this->Session->setFlash('Order Placed!','myflash',['params'=>['class' => 'flashsuccess message']]);
@@ -536,12 +538,13 @@ HTML;
                     $factor = $factor + 1;
                     $price = $pump['Pump']['price'] * $factor;
                     $updated_order = $this->pump_order($exchange_name,$signal_symbol,"sell",NULL,NULL,$quantity,$api_key,$api_secret,$exchange,$price,$existing_order);
+                    if(!empty($updated_order)){
                     if($updated_order['sell_order_id']==5212806){
                             $updated_order['active'] = 0;
                         }else{
                             $updated_order['active'] = 2;
                         }
-                    $this->Pump->save($updated_order);
+                    $this->Pump->save($updated_order);}
                 }
             }elseif($order_status == 2 && $pump['Pump']['sell_order_id'] != 5212806){
                 if(!in_array($pump['Pump']['sell_order_id'], array_column($open_orders, 'id'))) { 
