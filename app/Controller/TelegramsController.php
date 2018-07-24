@@ -679,7 +679,7 @@ HTML;
         }
             //unset($exchange);
 
-       
+       return $this->redirect(array('controller'=>'telegrams','action' => 'dashboard'));
         //$exchange = '\\ccxt\\' . $exchange_name;
         //$exchange = new $exchange ();
     }
