@@ -549,8 +549,11 @@ HTML;
             }elseif($order_status == 2 && $pump['Pump']['sell_order_id'] != 5212806){
                 if(!in_array($pump['Pump']['sell_order_id'], array_column($open_orders, 'id'))) { 
                     //echo "FOUND";
-                    $pump['Pump']['active'] = 0;
-                    $this->Pump->save($pump['Pump']);
+                    $quantity = $this->compare_balance($exchange, $pump['Pump']['signal_symb']);
+                    if($quantity < 1){
+                        $pump['Pump']['active'] = 0;
+                        $this->Pump->save($pump['Pump']);
+                    }
                 }
                 
             }
