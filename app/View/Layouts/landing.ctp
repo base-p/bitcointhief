@@ -1,10 +1,8 @@
-<!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script async="" src="./CryptoStorm PnD Bot _ Bittrex, Binance and Cryptopia _ Home_files/js.js"></script>
-        <title>Bitcointhief Bot | Cryptopia | Home</title>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <title>Bitcointhief Bot | Bittrex, Binance and Cryptopia | Home</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="CryptoStorm PnD Bot | Bittrex, Binance and Cryptopia">
         <meta name="keywords" content="pnd, pump and dump, pump &amp; dump, Bittrex, Binance, Cryptopia, bot, trading, short term trading, HODL, algorithmic">
@@ -19,8 +17,10 @@
         <meta name="twitter:title" content="CryptoStorm">
         <meta name="twitter:description" content="CryptoStorm PnD Bot | Bittrex, Binance and Cryptopia">
         <meta name="twitter:url" content="http://getcryptostorm.com">
+        <link href="https://fonts.googleapis.com/css?family=Nunito:700" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Maven+Pro" rel="stylesheet">
         
-    </head> 
+    </head>
     <?php echo $this->Flash->render(); ?>
     <?php echo $this->fetch('content'); ?>
     
