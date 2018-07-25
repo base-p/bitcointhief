@@ -55,8 +55,8 @@
             <span>Buy your copy of BitcoinThief Bot today or click on login to access dashboard.</span>
         </div>
         <div class="col-md-4">
-            <a class="button" id="buyBanner" href="https://getcryptostorm.com/buy">Register</a>
-            <a class="button light" id="demoBanner" href="https://getcryptostorm.com/trial">Login</a>
+            <a class="button" id="buyBanner" href="<?= SITEPATH.'register';?>">Register</a>
+            <a class="button light" id="demoBanner" href="<?= SITEPATH.'login';?>">Login</a>
         </div>
     </div>
 </section><!-- End page content -->
