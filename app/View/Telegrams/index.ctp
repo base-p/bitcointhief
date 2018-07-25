@@ -15,12 +15,12 @@
                 <span></span>
             </div>
             <div class="col-md-4 col-xs-12 brand">
-                <a href="https://getcryptostorm.com/"><span class="logo"></span>BitcoinThief Bot</a>
+                <a href="https://bitcointhief.app/"><span class="logo"></span>BitcoinThief Bot</a>
             </div>
             <div class="col-md-8 col-xs-12 nav-links">
-                <a href="https://getcryptostorm.com/guide">User Guide</a>
-                <a href="https://getcryptostorm.com/faq">FAQ</a>
-                <a href="https://getcryptostorm.com/support">Support</a>
+                <a href="https://bitcointhief.app/guide">User Guide</a>
+                <a href="https://bitcointhief.app/faq">FAQ</a>
+                <a href="https://bitcointhief.app/support">Support</a>
                 <a id="demo" href="<?= SITEPATH.'login';?>">Login</a>
                 <a id="buy" class="button" href="<?= SITEPATH.'register';?>">Register</a>
             </div>
@@ -62,16 +62,16 @@
 </section><!-- End page content -->
 <!-- Footer -->
 <div class="footer-wrapper">
-<div id="Contact">
-<div class="container">
-<p>Questions or comments? send us an Email at <a href="" target="_blank">Johnmccollins.ru@gmail.com</a></p>
-</div>
-</div>
-<footer>
-<div class="container">
-<p>© 2018 BitcoinThief Bot. All Rights Reserved.</p>
-</div>
-</footer>
+    <div id="Contact">
+        <div class="container">
+            <p>Questions or comments? send us an Email at <a href="" target="_blank">Johnmccollins.ru@gmail.com</a></p>
+        </div>
+    </div>
+    <footer>
+        <div class="container">
+            <p>© 2018 BitcoinThief Bot. All Rights Reserved.</p>
+        </div>
+    </footer>
 </div>
 <!-- End footer -->
 <!-- Scripts -->
